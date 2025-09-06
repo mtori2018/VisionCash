@@ -22,3 +22,6 @@
 *.bak
 *~
 .vscode/
+pyvenv.cfg
+Lib/
+Scripts/
