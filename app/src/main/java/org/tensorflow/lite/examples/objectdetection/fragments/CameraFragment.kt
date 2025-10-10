@@ -90,6 +90,12 @@ class CameraFragment : Fragment(), ObjectDetectorHelper.DetectorListener, TextTo
         }
     }
 
+    override fun onStop() {
+        super.onStop()
+        cameraProvider?.unbindAll() // Libera todos los casos de uso de la cámara
+        objectDetectorHelper.close() // Cierra el detector de objetos
+    }
+
     override fun onDestroyView() {
         _fragmentCameraBinding = null
         super.onDestroyView()

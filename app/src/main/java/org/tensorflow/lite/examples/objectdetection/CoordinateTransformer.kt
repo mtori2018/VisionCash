@@ -1,7 +1,7 @@
 package org.tensorflow.lite.examples.objectdetection
 
 import android.graphics.RectF
-import kotlin.math.min
+import kotlin.math.max
 
 /**
  * Clase de utilidad para transformar coordenadas entre diferentes sistemas de referencia.
@@ -10,9 +10,8 @@ import kotlin.math.min
  * (bounding boxes) desde el sistema de coordenadas de la imagen de entrada del modelo
  * al sistema de coordenadas de la vista en la pantalla del dispositivo.
  *
- * Maneja el escalado y el "letterboxing" (las bandas negras que se añaden para
- * mantener la relación de aspecto) para asegurar que las detecciones se dibujen
- * en la posición correcta.
+ * Maneja el escalado y el "fillStart" (escalado para llenar la vista y alineación al inicio)
+ * para asegurar que las detecciones se dibujen en la posición correcta.
  *
  * @param inputImageWidth Ancho de la imagen de entrada del modelo.
  * @param inputImageHeight Alto de la imagen de entrada del modelo.
@@ -27,20 +26,17 @@ class CoordinateTransformer(
 ) {
 
     // Calcula el factor de escala para la transformación.
-    // Se usa min para asegurar que la imagen quepa completamente en la vista
-    // manteniendo la relación de aspecto (letterboxing).
-    private val scale: Float = min(
+    // Se usa max para asegurar que la imagen llene completamente la vista
+    // (fillStart), permitiendo el recorte si la relación de aspecto no coincide.
+    private val scale: Float = max(
         viewWidth.toFloat() / inputImageWidth,
         viewHeight.toFloat() / inputImageHeight
     )
 
-    // Calcula el desplazamiento en el eje X para centrar la imagen escalada.
-    // Si la imagen es más ancha que la vista, no hay desplazamiento.
-    private val offsetX: Float = (viewWidth - inputImageWidth * scale) / 2
-
-    // Calcula el desplazamiento en el eje Y para centrar la imagen escalada.
-    // Si la imagen es más alta que la vista, no hay desplazamiento.
-    private val offsetY: Float = (viewHeight - inputImageHeight * scale) / 2
+    // Con fillStart, la imagen se alinea a la parte superior izquierda,
+    // por lo que los offsets son 0.
+    private val offsetX: Float = 0f
+    private val offsetY: Float = 0f
 
     /**
      * Transforma una caja delimitadora (RectF) desde el sistema de coordenadas

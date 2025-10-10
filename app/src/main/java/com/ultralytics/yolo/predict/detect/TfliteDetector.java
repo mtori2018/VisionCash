@@ -302,8 +302,6 @@ public class TfliteDetector extends Detector {
                         output[j][k] = byteBuffer.getFloat();
                     }
                 }
-
-
                 startTime = System.nanoTime();
 
                 ArrayList<DetectedObject> ret = PostProcessUtils.postprocess(
@@ -328,7 +326,15 @@ public class TfliteDetector extends Detector {
         return new ArrayList<>();
     }
 
-
+    /**
+     * Cierra el intérprete de TensorFlow Lite y libera sus recursos.
+     */
+    public void close() {
+        if (interpreter != null) {
+            interpreter.close();
+            interpreter = null;
+        }
+    }
 
 
 }

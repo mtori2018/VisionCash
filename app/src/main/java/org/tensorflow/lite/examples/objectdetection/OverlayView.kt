@@ -34,7 +34,6 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
     private var boxPaint = Paint()
     private var textBackgroundPaint = Paint()
     private var textPaint = Paint()
-    private var groundTruthBoxPaint = Paint()
 
     private var imageWidth: Int = 1
     private var imageHeight: Int = 1
@@ -66,10 +65,6 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
         boxPaint.color = ContextCompat.getColor(context!!, R.color.bounding_box_color)
         boxPaint.strokeWidth = 12F
         boxPaint.style = Paint.Style.STROKE
-
-        groundTruthBoxPaint.color = Color.GREEN
-        groundTruthBoxPaint.strokeWidth = 12F
-        groundTruthBoxPaint.style = Paint.Style.STROKE
     }
 
     override fun draw(canvas: Canvas) {
@@ -77,23 +72,13 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
 
         val transformer = coordinateTransformer ?: return
 
-        // Ground truth simulado en el espacio de coordenadas del input del modelo (ej. 640x640)
-        val groundTruthBox = RectF(150f, 150f, 400f, 400f)
-
-        // Dibuja la caja de ground truth para depuración
-        val mappedGroundTruthBox = transformer.transform(groundTruthBox)
-        canvas.drawRect(mappedGroundTruthBox, groundTruthBoxPaint)
-
         for (result in results) {
             val mappedBoundingBox = transformer.transform(result.boundingBox)
             canvas.drawRect(mappedBoundingBox, boxPaint)
 
-            val iou = ObjectDetectorHelper.calculateIoU(mappedBoundingBox, mappedGroundTruthBox)
-            val iouPercentage = (iou * 100).toInt()
-
             val percentage = (result.category.confidence * 100).toInt()
             val drawableText =
-                "${result.category.label} | Confianza: ${percentage}% | IoU: ${iouPercentage}%"
+                "${result.category.label} | Confianza: ${percentage}%"
 
             textBackgroundPaint.getTextBounds(drawableText, 0, drawableText.length, bounds)
             val textWidth = bounds.width()

@@ -68,6 +68,15 @@ class ObjectDetectorHelper(
         objectDetector = null
     }
 
+    /**
+     * Cierra el detector de objetos y libera sus recursos.
+     * Debe llamarse cuando el detector ya no se va a utilizar.
+     */
+    fun close() {
+        objectDetector?.close()
+        objectDetector = null
+    }
+
 
     // Initialize the object detector using current settings on the
     // thread that is using it. CPU and NNAPI delegates can be used with detectors

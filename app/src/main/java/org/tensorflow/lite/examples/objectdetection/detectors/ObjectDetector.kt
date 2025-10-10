@@ -22,6 +22,7 @@ class DetectionResult(
 
 interface ObjectDetector {
     fun detect(image: TensorImage, imageRotation: Int): DetectionResult
+    fun close()
 }
 
 

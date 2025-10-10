@@ -130,5 +130,10 @@ class CustomYoloDetector(
 
     }
 
-
+    /**
+     * Cierra el detector TFLite y libera sus recursos.
+     */
+    override fun close() {
+        yolo.close()
+    }
 }
