@@ -170,5 +170,32 @@ class ObjectDetectorHelper(
         const val DELEGATE_GPU = 1
         const val DELEGATE_NNAPI = 2
         // Ya no necesitamos constantes de modelo, la app usará solo el tuyo.
+
+        /**
+         * Calcula la Intersección sobre Unión (IoU) entre dos cajas delimitadoras.
+         *
+         * @param box1 La primera caja delimitadora (p. ej., la predicha).
+         * @param box2 La segunda caja delimitadora (p. ej., la real o ground truth).
+         * @return El valor de IoU, un flotante entre 0.0 y 1.0.
+         */
+        fun calculateIoU(box1: android.graphics.RectF, box2: android.graphics.RectF): Float {
+            val xA = maxOf(box1.left, box2.left)
+            val yA = maxOf(box1.top, box2.top)
+            val xB = minOf(box1.right, box2.right)
+            val yB = minOf(box1.bottom, box2.bottom)
+
+            // Calcula el área de la intersección
+            val intersectionArea = maxOf(0f, xB - xA) * maxOf(0f, yB - yA)
+
+            // Calcula el área de ambas cajas
+            val box1Area = (box1.right - box1.left) * (box1.bottom - box1.top)
+            val box2Area = (box2.right - box2.left) * (box2.bottom - box2.top)
+
+            // Calcula el área de la unión
+            val unionArea = box1Area + box2Area - intersectionArea
+
+            // Calcula el IoU
+            return if (unionArea > 0) intersectionArea / unionArea else 0f
+        }
     }
 }
