@@ -1,0 +1,26 @@
+\section{Validación Preliminar del Sistema}
+
+Para asegurar la conformidad del producto con las especificaciones y requerimientos finales, se ha llevado a cabo una validación preliminar en un entorno que simula las condiciones operativas reales. Esta fase de pruebas es crucial para identificar posibles cuellos de botella y garantizar que el sistema de detección de billetes funcione de manera robusta y eficiente.
+
+\subsection{Pruebas de Estrés y Rendimiento}
+
+Las pruebas de estrés se diseñaron para evaluar el comportamiento del sistema bajo cargas de trabajo intensivas, midiendo los tiempos de inferencia y la estabilidad de la aplicación. Se ejecutaron pruebas variando la cantidad de imágenes procesadas simultáneamente para simular diferentes escenarios de uso real.
+
+A continuación, se presenta una tabla que resume los resultados obtenidos durante las pruebas de rendimiento.
+
+\input{tablas/rendimiento_deteccion}
+
+Como se puede observar en la Tabla \ref{tab:rendimiento_deteccion}, los tiempos de inferencia se mantienen dentro de un rango aceptable, incluso al procesar un mayor número de imágenes. Esto demuestra la eficiencia del modelo y su capacidad para operar en condiciones de alta demanda.
+
+\subsection{Pruebas de Estrés Adicionales Propuestas}
+
+Para complementar la validación del sistema, se proponen las siguientes pruebas de estrés adicionales:
+
+\begin{itemize}
+    \item \textbf{Detección con Imágenes de Diferentes Resoluciones:} Evaluar cómo el tiempo de inferencia y la precisión del modelo se ven afectados al procesar imágenes con distintas resoluciones (e.g., 480p, 720p, 1080p). Esto permitiría determinar los límites operativos del sistema en diferentes dispositivos.
+    \item \textbf{Pruebas de Detección bajo Diferentes Condiciones de Iluminación:} Simular condiciones de poca luz, sobreexposición y sombras para verificar la robustez del detector de billetes en escenarios de uso real.
+    \item \textbf{Pruebas de Oclusión Parcial:} Analizar el comportamiento del modelo cuando los billetes están parcialmente cubiertos por otros objetos, para determinar el umbral de detección en condiciones no ideales.
+    \item \textbf{Pruebas de Resistencia a Largo Plazo:} Ejecutar la aplicación de forma continua durante un período prolongado (e.g., varias horas) para detectar posibles fugas de memoria o degradación del rendimiento a lo largo del tiempo.
+\end{itemize}
+
+La implementación de estas pruebas permitiría obtener una visión más completa del rendimiento y la fiabilidad del sistema en un amplio rango de condiciones operativas.

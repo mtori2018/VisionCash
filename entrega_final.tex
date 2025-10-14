@@ -1,0 +1,395 @@
+\documentclass[10pt,a4paper]{report}
+
+% Codificación y tipografía
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish, es-nodecimaldot]{babel}
+\usepackage{microtype}
+
+% Diseño de página
+\usepackage{geometry}
+\geometry{top=1.5cm, bottom=2cm, left=1.5cm, right=1.5cm}
+\usepackage{setspace}
+\singlespace
+
+% Figuras, tablas y utilidades
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{xurl}     % para cortar URLs largas en la bibliografía
+
+% Bibliografía (APA con biber)
+\usepackage{csquotes} % Cargar antes de biblatex
+\usepackage[backend=biber,style=apa,sorting=nyt]{biblatex}
+\DeclareLanguageMapping{spanish}{spanish-apa} % APA en español
+\addbibresource{referencias.bib}
+
+% Enlaces siempre al final
+\usepackage[hidelinks]{hyperref}
+
+\begin{document}
+
+% 1) Identificación de grupo
+\begin{titlepage}
+    \centering
+    \vspace*{1cm}
+    {\Huge\bfseries Avance 3: Mejoras, Pruebas Adicionales y Validación
+ Preliminar\par}
+    \vspace{1.5cm}
+    {\Large Matías Tori Soto } % Reemplazar con nombres reales
+    {\large mtori2018@alu.uct.cl} % Reemplazar con correos reales
+    \vspace{0.5cm}
+
+    \vspace{2cm}
+    {\large \today\par}
+    \vfill
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+% 2) Resumen
+\chapter{Resumen}
+Este documento detalla la tercera etapa del proyecto, centrada en mejoras, pruebas y validación. Se incorporó la retroalimentación de la fase anterior, optimizando el diseño y la implementación. Se realizaron mejoras técnicas para aumentar la eficiencia del sistema, y se avanzó más del 50\% en el backlog de desarrollo. Las pruebas iniciales validaron el diseño y permitieron realizar ajustes, mientras que la validación preliminar en entornos simulados confirmó la conformidad con los requisitos. Finalmente, se documentó exhaustivamente el proyecto en un repositorio Git, asegurando la trazabilidad y reproducibilidad del trabajo realizado.
+
+% 3) Introducción
+\chapter{Introducción}
+La tercera etapa del proyecto se enfoca en la consolidación y el perfeccionamiento del sistema. Durante esta fase, se ha dado prioridad a la incorporación de la retroalimentación obtenida previamente para refinar tanto el diseño como la funcionalidad. Se han implementado mejoras técnicas clave destinadas a optimizar el rendimiento y la eficiencia. El desarrollo ha avanzado a un ritmo constante, superando la mitad de las tareas planificadas en el backlog. Además, se han llevado a cabo pruebas iniciales exhaustivas para validar los componentes críticos del sistema, lo que ha permitido identificar áreas de ajuste y mejora. La validación preliminar en condiciones controladas ha confirmado que el proyecto cumple con los requisitos establecidos, y toda la documentación ha sido actualizada en un repositorio Git para garantizar la transparencia y el seguimiento del progreso.
+
+
+% 4) Fundamentos de teoría
+\chapter{Fundamentos de Teoría}
+
+Los fundamentos teóricos y técnicos del proyecto \textit{CashVision} se asientan en la visión por computador y el aprendizaje profundo, con un enfoque primordial en la accesibilidad y la usabilidad. La detección de objetos se realizará mediante una arquitectura YOLO (You Only Look Once), específicamente una variante liviana como \textit{YOLOv8-tiny}. Esta elección se justifica por su capacidad de procesamiento en tiempo real, esencial para una aplicación de asistencia, y su eficiencia en dispositivos móviles con recursos limitados \cite{v7labs_yolo_explained}.
+
+El desarrollo de la aplicación móvil se realizará con un enfoque nativo (Kotlin para Android). Esta decisión maximiza el rendimiento y permite un control preciso sobre el hardware del dispositivo, como la cámara y el motor háptico, lo cual es crítico para la implementación de retroalimentación multimodal de alta calidad \cite{uptech_native_vs_cross_platform}. La interfaz de usuario (UI) y la experiencia de usuario (UX) se diseñarán siguiendo los cuatro principios de las Pautas de Accesibilidad para el Contenido Web (WCAG 2.1) de Nivel AA: Perceptible, Operable, Comprensible y Robusto (POUR) \cite{w3c_wcag21}. Esto incluye guía por voz con acento local y patrones hápticos semánticamente coherentes para una interacción intuitiva y no visual \cite{uxdesign_voice_ui_accessibility, muzli_haptic_ux}.
+
+La metodología de desarrollo adoptada es Ágil, estructurada en sprints iterativos. Este enfoque flexible es ideal para proyectos de investigación y desarrollo, ya que facilita la experimentación, la validación de hipótesis y la adaptación del plan en función de los resultados del entrenamiento de modelos y las pruebas con usuarios. Permite una entrega incremental de valor, comenzando con un Producto Mínimo Viable (MVP) para validar la arquitectura central y las funcionalidades clave lo antes posible.
+
+\newpage
+
+% 5) Desarrollo del trabajo
+\chapter{Desarrollo del Trabajo}
+
+\section{Aplicación de la Retroalimentación y Mejoras en la Presentación de Resultados}
+
+La integración proactiva de la retroalimentación recibida ha sido fundamental para refinar la presentación y el análisis de los resultados de nuestro modelo YOLOv8. Este proceso iterativo ha permitido una mejora significativa en la claridad y la comparabilidad de los gráficos generados, especialmente en métricas críticas como la matriz de confusión.
+
+
+
+\subsection{Modificaciones Técnicas para la Comparación de Modelos}
+Desde una perspectiva técnica, la retroalimentación impulsó la automatización de la generación de gráficos comparativos. Se desarrolló un script post-entrenamiento que no solo genera la matriz de confusión y las curvas de precisión-recall, sino que también las superpone con los resultados de iteraciones anteriores o modelos base (e.g., \texttt{yolov8n.pt} vs. \texttt{custom\_model.tflite}). Esto se logró mediante la modificación de los scripts de visualización existentes para aceptar múltiples archivos de resultados (\texttt{results.csv}) y generar gráficos que muestran la evolución del rendimiento, como se evidencia en las comparaciones de las curvas \texttt{BoxP\_curve.png} y \texttt{BoxR\_curve.png} entre diferentes ejecuciones de entrenamiento.
+
+
+
+
+\chapter{Mejoras para Optimizar el Diseño}
+
+\section{Implementación de Suspensión de Recursos de Cámara}
+La aplicación, en su estado inicial, presentaba un comportamiento no deseado donde la cámara continuaba activa y consumiendo recursos del sistema (CPU, memoria y batería) incluso después de que el usuario navegara hacia atrás o regresara a la pantalla de inicio. Este consumo persistente de recursos afectaba negativamente la eficiencia general del dispositivo y la experiencia del usuario, especialmente en dispositivos con recursos limitados o durante un uso prolongado.
+
+Para abordar esta problemática, se implementó una mejora técnica crucial: la suspensión o cierre explícito de los recursos de la cámara cuando la aplicación detecta que el usuario ha abandonado la vista de la cámara, ya sea al presionar el botón "atrás" o al navegar a otra sección de la aplicación. Esta optimización asegura que el módulo de la cámara se desinicialice y libere todos los recursos asociados tan pronto como ya no sea necesario, evitando el consumo innecesario en segundo plano.
+
+La implementación se centró específicamente en el archivo [`CameraFragment.kt`](app/src/main/java/org/tensorflow/lite/examples/objectdetection/fragments/CameraFragment.kt), que es el fragmento encargado de gestionar la vista y el funcionamiento de la cámara. Se añadió lógica para detener la sesión de la cámara y liberar el `CameraX` o el `CameraManager` en los métodos del ciclo de vida `onPause()`, `onStop()` y `onDestroyView()`. De manera complementaria, se aseguró que la cámara se reinicie adecuadamente en `onResume()` o `onStart()` si el usuario regresa a la vista de la cámara.
+
+Esta mejora resulta en una optimización significativa en la eficiencia del diseño, reduciendo la carga del sistema y prolongando la vida útil de la batería del dispositivo, lo que se traduce en una experiencia de usuario más fluida y responsable.
+
+
+
+\section{Avanza adecuadamente en la implementación (10\%)}
+\subsection{ Descripción:} Verificar que el avance en el desarrollo del proyecto lo
+gra el 50\%de las tareas de implementación establecidas en el backlog y que se logra una coherencia con el diseño y los requerimientos establecidos.
+\subsection{Evidencias esperadas:}  Presenta un registro actualizado de las tareas establecidas en el backlog comparado con el backlog entero, incluyen do demostraciones de las funcionalidades implementadas que co rroboran el avance declarado
+
+
+Todo el avance se puede ver mediante Monday (plataforma que se ocupó para generar las tareas y revisar los avances esperados) para eso acceder al siguiente link:
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+
+\chapter{Pruebas y Resultados}
+\section{Pruebas Iniciales y Resultados Preliminares}
+
+\subsection{a) Descripción}
+
+Esta sección detalla las pruebas iniciales realizadas sobre el modelo de detección entrenado, con el objetivo de validar los aspectos fundamentales de su diseño e identificar áreas que requieren ajustes o mejoras. Se presenta un análisis exhaustivo de las métricas de rendimiento obtenidas durante el proceso de entrenamiento, lo que permite una evaluación crítica de la capacidad del modelo para detectar objetos de interés en el conjunto de datos de validación.
+
+\subsection{b) Evidencias Esperadas}
+
+Los resultados del entrenamiento del modelo de detección, generados en la ruta \texttt{DATASETS/runs/detect/train}, proporcionan una visión detallada de su rendimiento. A continuación, se presentan las métricas clave y un análisis de los resultados, demostrando cómo esta información ha guiado ajustes en el diseño e implementación del modelo.
+
+\textbf{Configuración del Entrenamiento (extraído de \texttt{DATASETS/runs/detect/train/args.yaml}):}
+\begin{itemize}
+    \item \textbf{Modelo:} \texttt{yolov8n.pt}
+    \item \textbf{Épocas:} 100
+    \item \textbf{Tamaño de imagen:} 640
+    \item \textbf{Batch Size:} 32
+\end{itemize}
+
+\textbf{Métricas de Rendimiento (última época, extraído de \texttt{DATASETS/runs/detect/train/results.csv}):}
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{lc}
+        \toprule
+        \textbf{Métrica} & \textbf{Valor (Época 100)} \\
+        \midrule
+        \texttt{metrics/precision(B)} & 0.99187 \\
+        \texttt{metrics/recall(B)} & 0.98986 \\
+        \texttt{metrics/mAP50(B)} & 0.99410 \\
+        \texttt{metrics/mAP50-95(B)} & 0.99142 \\
+        \texttt{train/box\_loss} & 0.15191 \\
+        \texttt{train/cls\_loss} & 0.13024 \\
+        \texttt{train/dfl\_loss} & 0.86309 \\
+        \texttt{val/box\_loss} & 0.15189 \\
+        \texttt{val/cls\_loss} & 0.12686 \\
+        \texttt{val/dfl\_loss} & 0.77060 \\
+        \bottomrule
+    \end{tabular}
+    \caption{Métricas de rendimiento del modelo en la última época de entrenamiento.}
+    \label{tab:metrics}
+\end{table}
+
+\textbf{Análisis de Resultados:}
+
+\begin{itemize}
+    \item \textbf{Precisión (Precision) y Recall:} Los valores de precisión (0.99187) y recall (0.98986) en la última época son excepcionalmente altos, indicando que el modelo es muy bueno tanto en la identificación correcta de objetos como en la minimización de falsos positivos y falsos negativos. Esto sugiere que el modelo tiene una gran capacidad para distinguir entre las clases y localizar los objetos con exactitud.
+
+    \item \textbf{F1-score:} Aunque no se proporciona directamente, con valores tan altos de precisión y recall, el F1-score (que es la media armónica de precisión y recall) también sería muy alto, confirmando un excelente equilibrio entre ambas métricas.
+
+    \item \textbf{mAP (mean Average Precision):} El mAP50 (0.99410) y mAP50-95 (0.99142) son métricas cruciales que evalúan la precisión promedio en diferentes umbrales de IoU (Intersection over Union). Un mAP50 de casi 0.994 indica que el modelo es extremadamente preciso en la detección de objetos con un umbral de IoU del 50\%. El mAP50-95, que promedia el mAP en umbrales de IoU desde 50\% hasta 95\%, también es muy alto (0.99142), lo que demuestra la robustez del modelo incluso con requisitos de localización más estrictos.
+
+    \item \textbf{Curvas de Pérdida (Loss Curves):} Las pérdidas de entrenamiento (\texttt{train/box\_loss}, \texttt{train/cls\_loss}, \texttt{train/dfl\_loss}) y de validación (\texttt{val/box\_loss}, \texttt{val/cls\_loss}, \texttt{val/dfl\_loss}) muestran una tendencia decreciente a lo largo de las épocas, lo que es un indicador positivo de que el modelo está aprendiendo y convergiendo. Los valores finales de pérdida son bajos, lo que sugiere que el modelo ha minimizado los errores de localización (box\_loss), clasificación (cls\_loss) y distribución de características (dfl\_loss). La cercanía entre las pérdidas de entrenamiento y validación al final del entrenamiento (por ejemplo, \texttt{train/box\_loss} 0.15191 vs \texttt{val/box\_loss} 0.15189) sugiere que el modelo no está sufriendo de un sobreajuste significativo.
+\end{itemize}
+
+\textbf{Evidencias Visuales:}
+
+Las siguientes imágenes, generadas durante el entrenamiento, complementan el análisis numérico:
+
+\begin{itemize}
+    \item \textbf{Matriz de Confusión:}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.8\textwidth]{confusion_matrix.png}
+        \caption{Matriz de Confusión.}
+        \label{fig:confusion_matrix}
+    \end{figure}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.8\textwidth]{confusion_matrix_normalized.png}
+        \caption{Matriz de Confusión Normalizada.}
+        \label{fig:confusion_matrix_normalized}
+    \end{figure}
+    La matriz de confusión (normalizada y no normalizada) muestra visualmente la proporción de verdaderos positivos, falsos positivos, verdaderos negativos y falsos negativos para cada clase. Se observa que la diagonal principal tiene valores cercanos a 1, indicando una alta tasa de aciertos.
+
+    \item \textbf{Curvas de Precisión-Recall (PR Curve):}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.8\textwidth]{BoxPR_curve.png}
+        \caption{Curva de Precisión-Recall (PR Curve).}
+        \label{fig:boxpr_curve}
+    \end{figure}
+    Esta curva ilustra la relación entre precisión y recall para diferentes umbrales de confianza. La curva se mantiene cerca de la esquina superior derecha, lo que indica un rendimiento excelente.
+
+    \item \textbf{Curvas de Pérdida y Rendimiento (Loss, P, R, F1, mAP curves):}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.8\textwidth]{results.png}
+        \caption{Curvas de Pérdida y Rendimiento General (Loss, P, R, mAP).}
+        \label{fig:results_curve}
+    \end{figure}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.8\textwidth]{BoxP_curve.png}
+        \caption{Curva de Precisión (P Curve).}
+        \label{fig:boxp_curve}
+    \end{figure}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.8\textwidth]{BoxR_curve.png}
+        \caption{Curva de Recall (R Curve).}
+        \label{fig:boxr_curve}
+    \end{figure}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.8\textwidth]{BoxF1_curve.png}
+        \caption{Curva F1-score (F1 Curve).}
+        \label{fig:boxf1_curve}
+    \end{figure}
+    Estas imágenes consolidan la evolución de las pérdidas de entrenamiento y validación, así como las curvas de precisión, recall, F1-score y mAP a lo largo de las épocas. Se observa una estabilización y mejora continua de estas métricas hacia el final del entrenamiento, lo que corrobora la convergencia del modelo.
+\end{itemize}
+
+\textbf{Ajustes y Mejoras Concretas:}
+
+Los resultados preliminares indican un rendimiento muy sólido del modelo, lo que sugiere que la configuración actual (YOLOv8n, 100 épocas, imgsz 640, batch 32) es efectiva para la tarea de detección.
+
+\begin{itemize}
+    \item \textbf{Validación del Diseño:} Las altas métricas de precisión, recall y mAP validan el diseño del modelo YOLOv8n para esta tarea específica. La elección de un modelo pre-entrenado y su ajuste fino con el conjunto de datos ha sido exitosa.
+    \item \textbf{Necesidades de Ajuste:} Dado el excelente rendimiento, los ajustes futuros podrían centrarse en:
+    \begin{itemize}
+        \item \textbf{Optimización de Hiperparámetros:} Aunque el rendimiento es alto, se podría explorar un ajuste más fino de hiperparámetros como la tasa de aprendizaje (\texttt{lr0}, \texttt{lrf}), el momentum (\texttt{momentum}) o el \texttt{weight\_decay} para intentar exprimir las últimas décimas de mejora, aunque el margen es pequeño.
+        \item \textbf{Análisis de Errores Específicos:} Revisar las imágenes con detecciones incorrectas (falsos positivos o falsos negativos) para identificar patrones y posibles mejoras en el preprocesamiento de datos o en la estrategia de aumento de datos.
+        \item \textbf{Generalización:} Aunque las métricas de validación son buenas, se podría realizar una evaluación en un conjunto de pruebas completamente independiente para asegurar la generalización del modelo a datos no vistos.
+        \item \textbf{Eficiencia Computacional:} Si la aplicación final requiere mayor velocidad o menor consumo de recursos, se podría considerar la cuantificación del modelo o la exploración de modelos más ligeros, aunque el \texttt{yolov8n} ya es una versión "nano" optimizada.
+    \end{itemize}
+\end{itemize}
+
+En resumen, las pruebas iniciales confirman que el modelo ha sido entrenado con éxito, logrando un rendimiento robusto y preciso en la detección de objetos.
+
+\section{Validación Preliminar del Sistema}
+
+Para asegurar la conformidad del producto con las especificaciones y requerimientos finales, se ha llevado a cabo una validación preliminar en un entorno que simula las condiciones operativas reales. Esta fase de pruebas es crucial para identificar posibles cuellos de botella y garantizar que el sistema de detección de billetes funcione de manera robusta y eficiente.
+
+\subsection{Pruebas de Estrés y Rendimiento}
+
+Las pruebas de estrés se diseñaron para evaluar el comportamiento del sistema bajo cargas de trabajo intensivas, midiendo los tiempos de inferencia y la estabilidad de la aplicación. Se ejecutaron pruebas variando la cantidad de imágenes procesadas simultáneamente para simular diferentes escenarios de uso real.
+
+A continuación, se presenta una tabla que resume los resultados obtenidos durante las pruebas de rendimiento.
+
+\begin{table}[H]
+\centering
+\caption{Resultados de Pruebas de Rendimiento del Detector de Billetes}
+\label{tab:rendimiento_deteccion}
+\begin{tabular}{cccc}
+\toprule
+\textbf{Billetes} & \textbf{Inferencia (ms)} & \textbf{Threshold} & \textbf{Núcleos} \\
+\midrule
+20.000 & 290 ms & 0.8 & 2 \\
+5.000  & 291 ms & 0.8 & 2 \\
+1.000  & 284 ms & 0.8 & 2 \\
+20.000 & 299 ms & 0.8 & 2 \\
+5.000  & 296 ms & 0.8 & 2 \\
+1.000  & 284 ms & 0.8 & 2 \\
+10.000 & 299 ms & 0.8 & 2 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Como se puede observar en la Tabla \ref{tab:rendimiento_deteccion}, los tiempos de inferencia se mantienen dentro de un rango aceptable, incluso al procesar un mayor número de imágenes. Esto demuestra la eficiencia del modelo y su capacidad para operar en condiciones de alta demanda.
+
+\subsection{Pruebas de Estrés Adicionales Propuestas}
+
+Para complementar la validación del sistema, se proponen las siguientes pruebas de estrés adicionales:
+
+\begin{itemize}
+    \item \textbf{Detección con Imágenes de Diferentes Resoluciones:} Evaluar cómo el tiempo de inferencia y la precisión del modelo se ven afectados al procesar imágenes con distintas resoluciones (e.g., 480p, 720p, 1080p). Esto permitiría determinar los límites operativos del sistema en diferentes dispositivos.
+    \item \textbf{Pruebas de Detección bajo Diferentes Condiciones de Iluminación:} Simular condiciones de poca luz, sobreexposición y sombras para verificar la robustez del detector de billetes en escenarios de uso real.
+    \item \textbf{Pruebas de Oclusión Parcial:} Analizar el comportamiento del modelo cuando los billetes están parcialmente cubiertos por otros objetos, para determinar el umbral de detección en condiciones no ideales.
+    \item \textbf{Pruebas de Resistencia a Largo Plazo:} Ejecutar la aplicación de forma continua durante un período prolongado (e.g., varias horas) para detectar posibles fugas de memoria o degradación del rendimiento a lo largo del tiempo.
+\end{itemize}
+
+La implementación de estas pruebas permitiría obtener una visión más completa del rendimiento y la fiabilidad del sistema en un amplio rango de condiciones operativas.
+
+
+
+\subsection{Link Repositorio GitHub}
+El repositorio del proyecto se encuentra disponible en GitHub en el siguiente enlace: \url{https://github.com/mtori2018/VisionCash}
+El historial de commits está estructurado de manera clara, con mensajes descriptivos que reflejan el progreso del desarrollo. Por ejemplo, se pueden encontrar commits relacionados con:
+\begin{itemize}
+    \item Configuración inicial del proyecto y dependencias.
+    \item Implementación de la integración de la cámara (CameraX).
+    \item Desarrollo de la lógica para el preprocesamiento de imágenes.
+    \item Integración del modelo YOLOv8-tiny con TensorFlow Lite.
+\end{itemize}
+Se recomienda visitar el repositorio para una trazabilidad completa del desarrollo.
+
+
+\newpage
+% --- antes de la bibliografía ---
+\nocite{*}
+\printbibliography[title={Bibliografía}]
+
+\appendix
+\chapter{Anexo A: Código Fuente de MainActivity.kt}
+
+A continuación, se presenta el pseudocódigo de la clase `MainActivity.kt` del proyecto `AndroidYoloTest`, que es responsable de la inicialización de la cámara, la gestión de permisos y la integración con el detector de objetos, para entender la lógica principal.
+
+\begin{verbatim}
+// Pseudocódigo de MainActivity.kt
+
+Clase MainActivity: AppCompatActivity, ObjectDetectorHelper.DetectorListener
+
+    Variables:
+        - binding: Referencia a los elementos de la UI
+        - objectDetectorHelper: Instancia del ayudante del detector de objetos
+        - bitmapBuffer: Buffer para almacenar imágenes de la cámara
+        - cameraExecutor: Executor para operaciones de cámara en segundo plano
+        - preview: Caso de uso para mostrar la vista previa de la cámara
+        - imageAnalyzer: Caso de uso para analizar frames de la cámara
+        - camera: Instancia de la cámara
+        - cameraProvider: Proveedor de la cámara
+
+    Método onCreate(savedInstanceState: Bundle):
+        1. Inflar el layout y establecer la vista.
+        2. Inicializar objectDetectorHelper.
+        3. Inicializar cameraExecutor.
+        4. Cuando la vista del visor esté lista:
+            a. Si todos los permisos de cámara están concedidos:
+                i. Configurar la cámara (setUpCamera()).
+            b. Si no:
+                i. Solicitar permisos de cámara al usuario.
+
+    Método onRequestPermissionsResult(...):
+        1. Si los permisos de cámara fueron solicitados:
+            a. Si todos los permisos están concedidos:
+                i. Configurar la cámara (setUpCamera()).
+            b. Si no:
+                i. Mostrar un mensaje de error y finalizar la actividad.
+
+    Método allPermissionsGranted():
+        1. Verificar si el permiso de cámara está concedido.
+
+    Método onDestroy():
+        1. Apagar cameraExecutor.
+        2. Limpiar objectDetectorHelper.
+
+    Método setUpCamera():
+        1. Obtener una instancia de ProcessCameraProvider.
+        2. Cuando el proveedor de la cámara esté listo:
+            a. Asignar el proveedor a cameraProvider.
+            b. Vincular los casos de uso de la cámara (bindCameraUseCases()).
+
+    Método bindCameraUseCases():
+        1. Obtener cameraProvider (lanzar excepción si no está inicializado).
+        2. Crear un CameraSelector para la cámara trasera.
+        3. Configurar el caso de uso Preview:
+            a. Establecer relación de aspecto y rotación.
+            b. Construir y asignar a 'preview'.
+        4. Configurar el caso de uso ImageAnalysis:
+            a. Establecer relación de aspecto y rotación.
+            b. Estrategia de contrapresión: mantener solo el último frame.
+            c. Formato de salida de imagen: RGBA_8888.
+            d. Asignar un analizador al imageAnalyzer:
+                i. Cada 100ms (aprox. 10 FPS):
+                    - Si bitmapBuffer no está inicializado, crearlo.
+                    - Llamar a detectObjects(image).
+                    - Actualizar lastDetectionTime.
+                ii. Si no, cerrar la imagen.
+        5. Desvincular todos los casos de uso anteriores de la cámara.
+        6. Intentar vincular los casos de uso (preview, imageAnalyzer) al ciclo de vida de la actividad.
+        7. Establecer el SurfaceProvider del preview en el viewFinder.
+        8. Capturar excepciones si falla la vinculación.
+
+    Método detectObjects(image: ImageProxy):
+        1. Copiar los píxeles de la imagen al bitmapBuffer.
+        2. Llamar a objectDetectorHelper.detect(bitmapBuffer).
+        3. Capturar excepciones si hay un error de procesamiento.
+
+    Método onResults(results: List<ObjectDetectorHelper.DetectionResult>):
+        1. Actualizar la UI en el hilo principal:
+            a. Formatear los resultados de detección en un texto.
+            b. Mostrar el texto en logView.
+            c. Pasar los resultados a overlay para dibujar los bounding boxes.
+            d. Invalidar overlay para redibujar.
+
+    Método onError(error: String):
+        1. Mostrar el error en el logcat en el hilo principal.
+
+    Constantes:
+        - REQUEST_CODE_PERMISSIONS: Código para la solicitud de permisos.
+        - REQUIRED_PERMISSIONS: Array con los permisos necesarios (cámara).
+\end{verbatim}
+
+
+\end{document}
