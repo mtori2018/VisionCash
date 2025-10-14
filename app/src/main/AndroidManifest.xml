@@ -40,6 +40,7 @@
 
         <activity
             android:name=".MainActivity"
+            android:clearTaskOnLaunch="true"
             android:theme="@style/AppTheme"
             android:exported="true"
             android:icon="@android:drawable/ic_menu_camera"

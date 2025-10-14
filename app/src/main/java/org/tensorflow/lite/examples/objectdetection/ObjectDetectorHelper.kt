@@ -19,11 +19,15 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.os.SystemClock
 import org.tensorflow.lite.examples.objectdetection.detectors.ObjectDetection
+import org.tensorflow.lite.task.core.BaseOptions
+
 import org.tensorflow.lite.examples.objectdetection.detectors.ObjectDetector
+
 import org.tensorflow.lite.examples.objectdetection.detectors.CustomYoloDetector
 import org.tensorflow.lite.support.image.ImageProcessor
 import org.tensorflow.lite.support.image.TensorImage
 import org.tensorflow.lite.support.image.ops.Rot90Op
+import org.tensorflow.lite.task.vision.detector.ObjectDetector.ObjectDetectorOptions
 
 
 /**
@@ -109,6 +113,9 @@ class ObjectDetectorHelper(
      */
     fun detect(image: Bitmap, imageRotation: Int) {
 
+        if (objectDetector == null) {
+            setupObjectDetector()
+        }
 
         // Create preprocessor for the image.
         // See https://www.tensorflow.org/lite/inference_with_metadata/lite_support#imageprocessor_architecture
@@ -171,6 +178,7 @@ class ObjectDetectorHelper(
         const val DELEGATE_CPU = 0
         const val DELEGATE_GPU = 1
         const val DELEGATE_NNAPI = 2
+        // Ya no necesitamos constantes de modelo, la app usará solo el tuyo.
 
         /**
          * Calcula la Intersección sobre Unión (IoU) entre dos cajas delimitadoras.
