@@ -88,6 +88,9 @@ class CameraFragment : Fragment(), ObjectDetectorHelper.DetectorListener, TextTo
             Navigation.findNavController(requireActivity(), R.id.fragment_container)
                 .navigate(CameraFragmentDirections.actionCameraToPermissions())
         }
+        // Re-initialize the object detector to ensure it's in a valid state
+        // after the app resumes from a paused state.
+        objectDetectorHelper.setupObjectDetector()
     }
 
     override fun onStop() {

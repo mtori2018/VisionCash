@@ -119,7 +119,7 @@ public class TfliteDetector extends Detector {
             numClasses = labels.size();
             try {
                 MappedByteBuffer modelFile = loadModelFile(assetManager, localYoloModel.modelPath);
-                initDelegate(modelFile, useGpu);
+                initDelegate(modelFile); // Eliminado useGpu
             } catch (Exception e) {
                 throw new PredictorException("Error model");
             }
@@ -189,26 +189,12 @@ public class TfliteDetector extends Detector {
 
     }
 
-    private void initDelegate(MappedByteBuffer buffer, boolean useGpu) {
+    private void initDelegate(MappedByteBuffer buffer) { // Eliminado useGpu
         Interpreter.Options interpreterOptions = new Interpreter.Options();
-        try {
-            // Check if GPU support is available
-            CompatibilityList compatibilityList = new CompatibilityList();
-            // if (useGpu && compatibilityList.isDelegateSupportedOnThisDevice()) {
-            //     GpuDelegateFactory.Options delegateOptions = compatibilityList.getBestOptionsForThisDevice();
-            //     GpuDelegate gpuDelegate = new GpuDelegate(delegateOptions.setQuantizedModelsAllowed(true));
-            //     interpreterOptions.addDelegate(gpuDelegate);
-            // } else {
-            interpreterOptions.setNumThreads(4);
-            // }
-            // Create the interpreter
-            this.interpreter = new Interpreter(buffer, interpreterOptions);
-        } catch (Exception e) {
-            interpreterOptions = new Interpreter.Options();
-            interpreterOptions.setNumThreads(4);
-            // Create the interpreter
-            this.interpreter = new Interpreter(buffer, interpreterOptions);
-        }
+        // Siempre usar hilos de CPU
+        interpreterOptions.setNumThreads(4);
+        // Create the interpreter
+        this.interpreter = new Interpreter(buffer, interpreterOptions);
 
         int[] outputShape = interpreter.getOutputTensor(0).shape();
         outputShape2 = outputShape[1];

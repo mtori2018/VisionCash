@@ -113,9 +113,6 @@ class ObjectDetectorHelper(
      */
     fun detect(image: Bitmap, imageRotation: Int) {
 
-        if (objectDetector == null) {
-            setupObjectDetector()
-        }
 
         // Create preprocessor for the image.
         // See https://www.tensorflow.org/lite/inference_with_metadata/lite_support#imageprocessor_architecture
