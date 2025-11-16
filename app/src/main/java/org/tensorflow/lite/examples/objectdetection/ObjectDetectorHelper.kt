@@ -44,12 +44,10 @@ import org.tensorflow.lite.task.vision.detector.ObjectDetector.ObjectDetectorOpt
  * @param objectDetectorListener Listener para notificar los resultados o errores.
  */
 class ObjectDetectorHelper(
-  var threshold: Float = 0.5f,
-  var numThreads: Int = 2,
+  var threshold: Float = 0.8f,
   var maxResults: Int = 3,
-  var currentDelegate: Int = 0,
   val context: Context,
-  val objectDetectorListener: DetectorListener?
+  var objectDetectorListener: DetectorListener?
 ) {
 
     // For this example this needs to be a var so it can be reset on changes. If the ObjectDetector
@@ -94,9 +92,7 @@ class ObjectDetectorHelper(
             objectDetector = CustomYoloDetector(
                 confidenceThreshold = threshold,
                 iouThreshold = 0.3f, // Puedes ajustar este valor si es necesario
-                numThreads = numThreads,
                 maxResults = maxResults,
-                currentDelegate = currentDelegate,
                 context = context,
             )
         } catch (e: Exception) {

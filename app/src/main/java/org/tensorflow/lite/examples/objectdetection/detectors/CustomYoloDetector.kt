@@ -6,7 +6,10 @@ import com.ultralytics.yolo.ImageProcessing
 import com.ultralytics.yolo.models.LocalYoloModel
 import com.ultralytics.yolo.predict.detect.DetectedObject
 import com.ultralytics.yolo.predict.detect.TfliteDetector
+import org.tensorflow.lite.Interpreter
 import org.tensorflow.lite.examples.objectdetection.ObjectDetectorHelper
+import org.tensorflow.lite.gpu.GpuDelegate
+import org.tensorflow.lite.support.common.FileUtil
 import org.tensorflow.lite.support.image.TensorImage
 
 
@@ -27,9 +30,7 @@ import org.tensorflow.lite.support.image.TensorImage
 class CustomYoloDetector(
     var confidenceThreshold: Float = 0.5f,
     var iouThreshold: Float = 0.3f,
-    var numThreads: Int = 2,
     var maxResults: Int = 3,
-    var currentDelegate: Int = 0,
     val context: Context
 ): ObjectDetector {
 
@@ -37,31 +38,25 @@ class CustomYoloDetector(
     private var ip: ImageProcessing
 
     init {
-
         yolo = TfliteDetector(context)
-        yolo.setIouThreshold(iouThreshold)
-        yolo.setConfidenceThreshold(confidenceThreshold)
+        ip = ImageProcessing()
 
-        // Apuntamos directamente a nuestro modelo personalizado
-        val modelPath = "custom_model.tflite"
-        // Apuntamos al archivo de metadatos correcto
         val metadataPath = "CustomYoloDetector.yaml"
-
         val config = LocalYoloModel(
             "detect",
             "tflite",
-            modelPath,
+            "custom_model.tflite",
             metadataPath,
         )
 
-        val useGPU = currentDelegate == 0
-        yolo.loadModel(
-            config,
-            useGPU
-        )
-
-        ip = ImageProcessing()
-
+        try {
+            // Force CPU by passing useGpu = false
+            yolo.loadModel(config, false)
+            yolo.setIouThreshold(iouThreshold)
+            yolo.setConfidenceThreshold(confidenceThreshold)
+        } catch (e: Exception) {
+            throw RuntimeException("Error initializing CustomYoloDetector", e)
+        }
     }
 
     /**
@@ -100,8 +95,9 @@ class CustomYoloDetector(
 
 
         for (result: DetectedObject in results) {
+            val label = "billete de " + result.label
             val category = Category(
-                result.label,
+                label,
                 result.confidence,
             )
             val yoloBox = result.boundingBox

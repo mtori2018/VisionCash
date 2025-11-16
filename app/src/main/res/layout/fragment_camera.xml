@@ -31,15 +31,16 @@
         android:layout_height="match_parent"
         android:layout_width="match_parent" />
 
+
     <ImageButton
-        android:id="@+id/gallery_button"
+        android:id="@+id/flash_button"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_gravity="top|end"
         android:layout_margin="16dp"
-        android:src="@android:drawable/ic_menu_gallery"
+        android:src="@drawable/ic_flash"
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="@string/alt_gallery_button" />
+        android:contentDescription="@string/alt_flash_button" />
 
     <ImageButton
         android:id="@+id/capture_button"

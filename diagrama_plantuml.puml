@@ -1,0 +1,24 @@
+@startuml ArquitecturaMetodologia
+!theme vibrant
+
+title Diseño General del Sistema (Tres Capas Funcionales)
+
+package "Dispositivo Móvil (Android)" {
+    
+    frame "Capa de Captura" #LightSkyBlue {
+        [**API CameraX**\n- Gestiona la cámara\n- Provee flujo de video] as Camera
+    }
+
+    frame "Capa de Procesamiento (IA)" #LightGreen {
+        [**Modelo YOLOv8-tiny (TFLite)**\n- Inferencia local\n- Detección de billetes] as Model
+    }
+
+    frame "Capa de Accesibilidad" #LightSalmon {
+        [**Motores del Sistema**\n- Texto a Voz (TTS)\n- Vibración (Hápticos)] as Accessibility
+    }
+}
+
+Camera --> Model : Flujo de video (frames)
+Model --> Accessibility : Resultados (denominación, confianza)
+
+@enduml

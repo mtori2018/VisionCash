@@ -50,13 +50,13 @@ import java.util.LinkedList
 import java.util.Locale
 
 /**
- * Fragmento principal que gestiona la cámara, la detección de objetos y la interfaz de usuario.
+ * Fragmento principal que gestiona la cรกmara, la detecciรณn de objetos y la interfaz de usuario.
  *
  * Este fragmento se encarga de:
- * - Inicializar y configurar la cámara utilizando CameraX.
- * - Crear una instancia de `ObjectDetectorHelper` para procesar los frames de la cámara.
- * - Mostrar la vista previa de la cámara y los resultados de la detección (cuadros delimitadores).
- * - Gestionar los controles de la interfaz de usuario para ajustar los parámetros de detección.
+ * - Inicializar y configurar la cรกmara utilizando CameraX.
+ * - Crear una instancia de `ObjectDetectorHelper` para procesar los frames de la cรกmara.
+ * - Mostrar la vista previa de la cรกmara y los resultados de la detecciรณn (cuadros delimitadores).
+ * - Gestionar los controles de la interfaz de usuario para ajustar los parรกmetros de detecciรณn.
  * - Implementar Text-to-Speech para anunciar los objetos detectados.
  */
 class CameraFragment : Fragment(), ObjectDetectorHelper.DetectorListener, TextToSpeech.OnInitListener {
@@ -79,6 +79,7 @@ class CameraFragment : Fragment(), ObjectDetectorHelper.DetectorListener, TextTo
 
     /** Blocking camera operations are performed using this executor */
     private lateinit var cameraExecutor: ExecutorService
+    private var isFlashOn = false
 
     override fun onResume() {
         super.onResume()
@@ -88,12 +89,23 @@ class CameraFragment : Fragment(), ObjectDetectorHelper.DetectorListener, TextTo
             Navigation.findNavController(requireActivity(), R.id.fragment_container)
                 .navigate(CameraFragmentDirections.actionCameraToPermissions())
         }
+
+        // Re-initialize the object detector and camera after resuming from a paused state.
+        objectDetectorHelper.clearObjectDetector()
+        fragmentCameraBinding.overlay.clear()
+        fragmentCameraBinding.viewFinder.post {
+            setUpCamera()
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        cameraProvider?.unbindAll() // Libera todos los casos de uso de la cรกmara
+        objectDetectorHelper.close() // Cierra el detector de objetos
     }
 
     override fun onStop() {
         super.onStop()
-        cameraProvider?.unbindAll() // Libera todos los casos de uso de la cámara
-        objectDetectorHelper.close() // Cierra el detector de objetos
     }
 
     override fun onDestroyView() {
@@ -143,72 +155,29 @@ class CameraFragment : Fragment(), ObjectDetectorHelper.DetectorListener, TextTo
 
     /**
      * Inicializa los listeners para los controles de la hoja inferior (bottom sheet).
-     * Permite al usuario ajustar el umbral, el número máximo de resultados y los hilos de inferencia.
+     * Permite al usuario ajustar el umbral, el nรบmero mรกximo de resultados y los hilos de inferencia.
      */
     private fun initBottomSheetControls() {
-        // When clicked, lower detection score threshold floor
-        fragmentCameraBinding.bottomSheetLayout.thresholdMinus.setOnClickListener {
-            if (objectDetectorHelper.threshold >= 0.1) {
-                objectDetectorHelper.threshold -= 0.1f
-                updateControlsUi()
-            }
-        }
+       fragmentCameraBinding.flashButton.setOnClickListener {
+           isFlashOn = !isFlashOn
+           camera?.cameraControl?.enableTorch(isFlashOn)
+           val announcement = if (isFlashOn) {
+               getString(R.string.flash_on)
+           } else {
+               getString(R.string.flash_off)
+           }
+           tts.speak(announcement, TextToSpeech.QUEUE_FLUSH, null, "")
+       }
+   }
 
-        // When clicked, raise detection score threshold floor
-        fragmentCameraBinding.bottomSheetLayout.thresholdPlus.setOnClickListener {
-            if (objectDetectorHelper.threshold <= 0.8) {
-                objectDetectorHelper.threshold += 0.1f
-                updateControlsUi()
-            }
-        }
-
-        // When clicked, reduce the number of objects that can be detected at a time
-        fragmentCameraBinding.bottomSheetLayout.maxResultsMinus.setOnClickListener {
-            if (objectDetectorHelper.maxResults > 1) {
-                objectDetectorHelper.maxResults--
-                updateControlsUi()
-            }
-        }
-
-        // When clicked, increase the number of objects that can be detected at a time
-        fragmentCameraBinding.bottomSheetLayout.maxResultsPlus.setOnClickListener {
-            if (objectDetectorHelper.maxResults < 5) {
-                objectDetectorHelper.maxResults++
-                updateControlsUi()
-            }
-        }
-
-        // When clicked, decrease the number of threads used for detection
-        fragmentCameraBinding.bottomSheetLayout.threadsMinus.setOnClickListener {
-            if (objectDetectorHelper.numThreads > 1) {
-                objectDetectorHelper.numThreads--
-                updateControlsUi()
-            }
-        }
-
-        // When clicked, increase the number of threads used for detection
-        fragmentCameraBinding.bottomSheetLayout.threadsPlus.setOnClickListener {
-            if (objectDetectorHelper.numThreads < 4) {
-                objectDetectorHelper.numThreads++
-                updateControlsUi()
-            }
-        }
-    }
 
     // Update the values displayed in the bottom sheet. Reset detector.
     /**
      * Actualiza la interfaz de usuario de los controles en la hoja inferior.
-     * Se llama cada vez que se modifica un parámetro de detección.
-     * También limpia el detector para que se reinicialice con la nueva configuración.
+     * Se llama cada vez que se modifica un parรกmetro de detecciรณn.
+     * Tambiรฉn limpia el detector para que se reinicialice con la nueva configuraciรณn.
      */
     private fun updateControlsUi() {
-        fragmentCameraBinding.bottomSheetLayout.maxResultsValue.text =
-            objectDetectorHelper.maxResults.toString()
-        fragmentCameraBinding.bottomSheetLayout.thresholdValue.text =
-            String.format("%.2f", objectDetectorHelper.threshold)
-        fragmentCameraBinding.bottomSheetLayout.threadsValue.text =
-            objectDetectorHelper.numThreads.toString()
-
         // Needs to be cleared instead of reinitialized because the GPU
         // delegate needs to be initialized on the thread using it when applicable
         objectDetectorHelper.clearObjectDetector()
@@ -219,7 +188,7 @@ class CameraFragment : Fragment(), ObjectDetectorHelper.DetectorListener, TextTo
     /**
      * Inicializa CameraX.
      * Obtiene una instancia del `ProcessCameraProvider` y, una vez disponible,
-     * llama a `bindCameraUseCases()` para configurar la vista previa y el análisis de imágenes.
+     * llama a `bindCameraUseCases()` para configurar la vista previa y el anรกlisis de imรกgenes.
      */
     private fun setUpCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
@@ -238,9 +207,9 @@ class CameraFragment : Fragment(), ObjectDetectorHelper.DetectorListener, TextTo
     // Declare and bind preview, capture and analysis use cases
     @SuppressLint("UnsafeOptInUsageError")
     /**
-     * Declara y vincula los casos de uso de la cámara (vista previa y análisis de imágenes).
-     * Configura la cámara trasera, el aspect ratio y el analizador de imágenes que
-     * procesará cada frame.
+     * Declara y vincula los casos de uso de la cรกmara (vista previa y anรกlisis de imรกgenes).
+     * Configura la cรกmara trasera, el aspect ratio y el analizador de imรกgenes que
+     * procesarรก cada frame.
      */
     private fun bindCameraUseCases() {
 
@@ -300,7 +269,7 @@ class CameraFragment : Fragment(), ObjectDetectorHelper.DetectorListener, TextTo
     }
 
     /**
-     * Procesa un `ImageProxy` de la cámara para la detección de objetos.
+     * Procesa un `ImageProxy` de la cรกmara para la detecciรณn de objetos.
      * Convierte la imagen a un `Bitmap` y la pasa al `ObjectDetectorHelper`.
      * @param image El `ImageProxy` proporcionado por el analizador de CameraX.
      */

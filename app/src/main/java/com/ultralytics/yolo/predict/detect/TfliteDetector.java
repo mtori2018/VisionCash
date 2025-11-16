@@ -25,7 +25,6 @@ import org.tensorflow.lite.DataType;
 import org.tensorflow.lite.Interpreter;
 import org.tensorflow.lite.gpu.CompatibilityList;
 import org.tensorflow.lite.gpu.GpuDelegate;
-// import org.tensorflow.lite.gpu.GpuDelegateFactory;
 import org.tensorflow.lite.support.common.ops.NormalizeOp;
 import org.tensorflow.lite.support.image.ImageProcessor;
 import org.tensorflow.lite.support.image.TensorImage;
@@ -119,7 +118,7 @@ public class TfliteDetector extends Detector {
             numClasses = labels.size();
             try {
                 MappedByteBuffer modelFile = loadModelFile(assetManager, localYoloModel.modelPath);
-                initDelegate(modelFile, useGpu);
+                initDelegate(modelFile);
             } catch (Exception e) {
                 throw new PredictorException("Error model");
             }
@@ -189,24 +188,12 @@ public class TfliteDetector extends Detector {
 
     }
 
-    private void initDelegate(MappedByteBuffer buffer, boolean useGpu) {
+    private void initDelegate(MappedByteBuffer buffer) {
         Interpreter.Options interpreterOptions = new Interpreter.Options();
         try {
-            // Check if GPU support is available
-            CompatibilityList compatibilityList = new CompatibilityList();
-            // if (useGpu && compatibilityList.isDelegateSupportedOnThisDevice()) {
-            //     GpuDelegateFactory.Options delegateOptions = compatibilityList.getBestOptionsForThisDevice();
-            //     GpuDelegate gpuDelegate = new GpuDelegate(delegateOptions.setQuantizedModelsAllowed(true));
-            //     interpreterOptions.addDelegate(gpuDelegate);
-            // } else {
-            interpreterOptions.setNumThreads(4);
-            // }
-            // Create the interpreter
             this.interpreter = new Interpreter(buffer, interpreterOptions);
         } catch (Exception e) {
             interpreterOptions = new Interpreter.Options();
-            interpreterOptions.setNumThreads(4);
-            // Create the interpreter
             this.interpreter = new Interpreter(buffer, interpreterOptions);
         }
 

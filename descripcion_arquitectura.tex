@@ -1,0 +1,16 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+
+\begin{document}
+
+\section*{Descripción de la Arquitectura}
+
+La arquitectura de la aplicación se estructura en cuatro capas principales que colaboran para ofrecer una experiencia de detección de objetos en tiempo real. 
+La \textbf{Capa de Presentación (UI)}, gestionada por \texttt{MainActivity}, es responsable de la interfaz de usuario. El componente central, \texttt{CameraFragment}, utiliza la API \texttt{CameraX} de los \textbf{Servicios del Sistema} para capturar el flujo de video. Este fragmento también se encarga de dibujar los resultados de la detección en una \texttt{OverlayView} y de gestionar los controles de la interfaz a través de un \texttt{BottomSheet UI}.
+
+La \textbf{Lógica de Control y Detección} actúa como intermediaria, donde \texttt{ObjectDetectorHelper} recibe los frames de la cámara, los procesa y los envía al \textbf{Núcleo de Inferencia (IA)}. Este núcleo, representado por \texttt{CustomYoloDetector}, utiliza un modelo de TensorFlow Lite (\texttt{custom\_model.tflite}) para realizar la detección de objetos. 
+
+Una vez que se obtienen los resultados, se notifican a la capa de presentación a través de la interfaz \texttt{DetectorListener}. Finalmente, \texttt{CameraFragment} anuncia los resultados al usuario mediante los servicios del sistema \texttt{TextToSpeech} y proporciona retroalimentación háptica con \texttt{Vibrator Service}.
+
+\end{document}

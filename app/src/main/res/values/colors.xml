@@ -16,12 +16,12 @@
 -->
 
 <resources>
-    <!-- TF Branding Orange -->
-    <color name="bounding_box_color">#FF6F00</color>
-    <color name="toolbar_background">#EEEEEE</color>
+    <!-- Colores de la aplicación VisionCash -->
+    <color name="bounding_box_color">#00FF00</color>
+    <color name="toolbar_background">#212121</color>
     <color name="ic_launcher_background">#FFFFFF</color>
-    <color name="bottom_sheet_background">#EEEEEE</color>
-    <color name="bottom_sheet_text_color">@android:color/black</color>
+    <color name="bottom_sheet_background">#80000000</color> <!-- Negro semi-transparente -->
+    <color name="bottom_sheet_text_color">#FFFFFF</color> <!-- Blanco -->
     <color name="icActive">#FFFFFFFF</color>
     <color name="icFocused">#DDFFFFFF</color>
     <color name="icPressed">#AAFFFFFF</color>

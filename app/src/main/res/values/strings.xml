@@ -17,6 +17,8 @@
 <resources>
     <string name="app_name">CashVision</string>
     <string name="welcome_message">CashVision listo. Apunte la cámara hacia un billete.</string>
+    <string name="flash_on">Linterna encendida</string>
+    <string name="flash_off">Linterna apagada</string>
 
     <string name="alt_bottom_sheet_chevron">Bottom sheet expandable indicator</string>
 
@@ -44,6 +46,6 @@
         <item>efficientdet-lite0.tflite</item>
         <item>custom_model_int8.tflite</item>
     </string-array>
-    <string name="alt_gallery_button">Seleccionar imagen de la galería</string>
+    <string name="alt_flash_button">Activar o desactivar el flash</string>
     <string name="alt_capture_button">Capturar pantalla</string>
 </resources>

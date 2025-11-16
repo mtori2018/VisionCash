@@ -77,24 +77,42 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
             canvas.drawRect(mappedBoundingBox, boxPaint)
 
             val percentage = (result.category.confidence * 100).toInt()
-            val drawableText =
-                "${result.category.label} | Confianza: ${percentage}%"
+            val labelText = result.category.label
+            val confidenceText = "Confianza: ${percentage}%"
 
-            textBackgroundPaint.getTextBounds(drawableText, 0, drawableText.length, bounds)
-            val textWidth = bounds.width()
-            val textHeight = bounds.height()
+            // Get text bounds for calculating background size
+            textBackgroundPaint.getTextBounds(labelText, 0, labelText.length, bounds)
+            val labelHeight = bounds.height()
+            val labelWidth = bounds.width()
+
+            textBackgroundPaint.getTextBounds(confidenceText, 0, confidenceText.length, bounds)
+            val confidenceWidth = bounds.width()
+
+            val textWidth = Math.max(labelWidth, confidenceWidth)
+            val textHeight = labelHeight * 2 + Companion.BOUNDING_RECT_TEXT_PADDING
+
+            // Draw background for text
             canvas.drawRect(
                 mappedBoundingBox.left,
                 mappedBoundingBox.top,
-                mappedBoundingBox.left + textWidth + Companion.BOUNDING_RECT_TEXT_PADDING,
-                mappedBoundingBox.top + textHeight + Companion.BOUNDING_RECT_TEXT_PADDING,
+                mappedBoundingBox.left + textWidth + (Companion.BOUNDING_RECT_TEXT_PADDING * 2),
+                mappedBoundingBox.top + textHeight,
                 textBackgroundPaint
             )
 
+            // Draw the label on the first line
             canvas.drawText(
-                drawableText,
-                mappedBoundingBox.left,
-                mappedBoundingBox.top + bounds.height(),
+                labelText,
+                mappedBoundingBox.left + Companion.BOUNDING_RECT_TEXT_PADDING,
+                mappedBoundingBox.top + labelHeight,
+                textPaint
+            )
+
+            // Draw the confidence on the second line
+            canvas.drawText(
+                confidenceText,
+                mappedBoundingBox.left + Companion.BOUNDING_RECT_TEXT_PADDING,
+                mappedBoundingBox.top + labelHeight * 2,
                 textPaint
             )
         }
